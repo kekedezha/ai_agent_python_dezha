@@ -48,4 +48,11 @@ agent = create_tool_calling_agent(
 
 agent_executor = AgentExecutor(agent=agent, tools=[], verbose=True)
 raw_response = agent_executor.invoke({"query": "Give a list of the most important events in AI from 2020 to 2024"})
-print(raw_response)
+
+
+try:
+    structured_response = parser.parse(raw_response.get("output")[0]["text"])
+    print(structured_response)
+except Exception as e:
+    print("Error parsing response:", e)
+    print("Raw response:", raw_response)
