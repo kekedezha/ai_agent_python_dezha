@@ -4,6 +4,7 @@ from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
+from tools import search_tool
 
 # Load environment variables from .env file, this icludes API keys for LLMs
 load_dotenv() 
@@ -39,15 +40,18 @@ prompt_template = ChatPromptTemplate.from_messages(
       ]
 ).partial(format_instructions=parser.get_format_instructions())
 
+tools = [search_tool]
+
 ## CREATE AGENT
 agent = create_tool_calling_agent(
     llm=llm,
     prompt=prompt_template,
-    tools=[],
+    tools=tools,
 )
 
-agent_executor = AgentExecutor(agent=agent, tools=[], verbose=True)
-raw_response = agent_executor.invoke({"query": "Give a list of the most important events in AI from 2020 to 2024"})
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+query = input("What can I help you research today? ")
+raw_response = agent_executor.invoke({"query": query})
 
 
 try:
